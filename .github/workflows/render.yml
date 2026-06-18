@@ -2,7 +2,8 @@ name: Render TurniLab Video
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -10,40 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: 18
+          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: |
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
 
-      - name: Install Chrome for Remotion
-        run: npx remotion browser ensure
+      - name: Render Video with Remotion
+        run: npm run build
 
-      - name: Create output folder
-        run: mkdir -p out
-
-      - name: Render video
-        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --codec=h264
-
-      - name: Upload video as artifact
+      - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
         with:
           name: turnilab-video
-          path: out/turnilab-video.mp4
-          retention-days: 7
-
-      - name: Upload to Google Drive
-        if: ${{ secrets.GDRIVE_CREDENTIALS != '' }}
-        uses: adityak74/google-drive-upload-git-action@main
-        with:
-          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-          filename: out/turnilab-video.mp4
-          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
-          overwrite: true
-          mimeType: video/mp4
+          path: out/video.mp4
