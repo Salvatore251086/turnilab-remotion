@@ -19,11 +19,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install FFmpeg and Chromium Dependencies
-        uses: remotion-dev/template-github-action@v4
+      - name: Setup FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Install Remotion Browser Dependencies
+        run: npx remotion browser ensure
 
       - name: Render Video with Remotion
         run: npm run build
