@@ -22,18 +22,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install FFmpeg & System Chromium via Playwright/Puppeteer Deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg chromium-browser
-
       - name: Render Video via Remotion CLI
         run: npx remotion render src/index.jsx main out/video.mp4
         env:
-          # Forza Remotion a usare il binario stabile di sistema di Ubuntu bypassando download interni
-          REMOTION_CHROME_EXECUTABLE_PATH: /usr/bin/chromium-browser
-          # Flag di sicurezza per l'esecuzione in container isolati
-          REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --headless
+          # Utilizza l'eseguibile pre-installato e funzionante di GitHub
+          REMOTION_CHROME_EXECUTABLE_PATH: /usr/bin/google-chrome
 
       - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
