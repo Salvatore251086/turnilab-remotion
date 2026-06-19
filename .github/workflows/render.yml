@@ -9,25 +9,29 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    container:
-      image: remotiondev/remotion:ubuntu
-      # Forziamo il container a usare i permessi utente corretti di GitHub Actions
-      options: --user root
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
       - name: Install Dependencies
         run: npm install
 
-      - name: Render Video
-        run: npm run build
+      - name: Remotion Render Action (Ufficiale e Testata)
+        uses: remotion-dev/template-github-action@v4
+        with:
+          # Il comando di build definito nel tuo package.json
+          entry-point: src/index.jsx
+          composition-id: main # Sostituisci con l'ID esatto della tua composizione se diverso
+          output-location: out/video.mp4
         env:
-          # Forza Chromium a ignorare le restrizioni della sandbox Docker
-          REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage
-          # Evita che il processo vada in crash per mancanza di allocazione di memoria condivisa
-          DISABLE_GL_LOOPS: "true"
+          REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox
 
       - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
