@@ -38,7 +38,8 @@ jobs:
 
       - run: npm i
 
-      - run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4
+      - name: Render Video with Remotion (software GL renderer — GitHub Actions has no GPU)
+        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --gl=swiftshader
 
       - uses: actions/upload-artifact@v4
         with:
