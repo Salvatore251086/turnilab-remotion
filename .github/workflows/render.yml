@@ -8,12 +8,34 @@ on:
 
 jobs:
   render:
-    # Utilizza direttamente il flusso di lavoro centralizzato, testato e aggiornato da Remotion
-    uses: remotion-dev/template-github-action/.github/workflows/render.yml@main
-    with:
-      # Inserisci qui l'ID esatto della composizione nel tuo codice (es: "main", "HelloWorld", ecc.)
-      composition-id: main
-      # Il punto di ingresso del tuo codice Remotion
-      entry-point: src/index.jsx
-      # Il nome del file video finale che vuoi generare
-      output-location: out/video.mp4
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install FFmpeg & Chrome dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg chromium-browser
+
+      - name: Render Video via Remotion CLI
+        run: npx remotion render src/index.jsx main out/video.mp4
+        env:
+          # Forza Remotion a usare il Chromium di sistema appena installato, evitando i blocchi sandbox
+          REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage
+
+      - name: Upload Video Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: turnilab-video
+          path: out/video.mp4
