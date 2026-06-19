@@ -14,24 +14,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js (Node 22 LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 22
 
       - name: Install Dependencies
         run: npm install
 
-      - name: Install FFmpeg & Chrome dependencies
+      - name: Install FFmpeg
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg chromium-browser
+          sudo apt-get install -y ffmpeg
+
+      - name: Download Dedicated Chromium Binary
+        run: npx remotion browser ensure
 
       - name: Render Video via Remotion CLI
         run: npx remotion render src/index.jsx main out/video.mp4
         env:
-          # Forza Remotion a usare il Chromium di sistema appena installato, evitando i blocchi sandbox
           REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage
 
       - name: Upload Video Artifact
