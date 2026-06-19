@@ -27,11 +27,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Remotion Browser Dependencies
-        run: npx remotion browser ensure
+      - name: Create output folder
+        run: mkdir -p out
 
       - name: Render Video with Remotion
-        run: npm run build
+        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --codec=h264
         env:
           REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage
 
@@ -39,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: turnilab-video
-          path: out/video.mp4
+          path: out/turnilab-video.mp4
