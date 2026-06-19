@@ -29,13 +29,14 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Download Chrome Headless Shell for Remotion
+        run: npx remotion browser ensure
+
       - name: Create output folder
         run: mkdir -p out
 
       - name: Render Video with Remotion
-        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --codec=h264 --gl=angle --disable-web-security
-        env:
-          CI: true
+        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --codec=h264 --gl=angle
 
       - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
