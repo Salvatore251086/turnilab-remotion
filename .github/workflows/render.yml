@@ -19,10 +19,12 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install System FFmpeg
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg libnss3 libatk1.0-0 libatk-bridge2.0-0 \
+            libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 \
+            libxfixes3 libxrandr2 libgbm1 libasound2t64
 
       - name: Install Dependencies
         run: npm install
@@ -31,9 +33,9 @@ jobs:
         run: mkdir -p out
 
       - name: Render Video with Remotion
-        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --codec=h264
+        run: npx remotion render src/index.jsx TurniLabVideo out/turnilab-video.mp4 --codec=h264 --gl=angle --disable-web-security
         env:
-          REMOTION_CHROME_FLAGS: --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage
+          CI: true
 
       - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
